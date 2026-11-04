@@ -37,7 +37,6 @@ extern NSString *const kTPNAdSurgeAdapterVersion;
  *       unitId = 15277;    // AdSurge Ad Unit ID of this ad format
  *   };
  */
-extern NSString *const kTPNAdSurgeServerAppIDKey;
 extern NSString *const kTPNAdSurgeServerUnitIDKey;
 
 /// Optional bid floor configured in the dashboard custom parameters,
@@ -73,7 +72,7 @@ extern NSString *const kTPNAdSurgeAdapterErrorDomain;
 - (AdSurgeNativeAdLogoPosition)nativeLogoPositionWithArgument:(ATAdMediationArgument *)argument;
 
 /// Builds the C2S price dict which is passed back together with the "ad loaded" event.
-/// - Parameter revenue: revenue of a single impression in USD, i.e. eCPM / 1000.
+/// - Parameter revenue: `AdSurgeAd.revenue`, an eCPM in USD. Reported without conversion.
 + (NSDictionary *)c2sInfoWithRevenue:(double)revenue;
 
 /// Wraps an `AdSurgeError` into an `NSError` so it can be reported to the TopOn SDK.

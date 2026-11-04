@@ -69,16 +69,28 @@
 
 #pragma mark - Private
 
+/// 读取后台下发的 AdSurge App ID。
+/// 后台填写风格不统一（`appid` / `appId` / `app_id`），这里按别名依次兜底，
+/// 避免因为 NSDictionary 的 key 大小写敏感而误报 "appid is empty"。
 - (NSString *)appIDWithInitArgument:(ATAdInitArgument *)adInitArgument {
-    id appID = adInitArgument.serverContentDic[kTPNAdSurgeServerAppIDKey];
-    if ([appID isKindOfClass:[NSNumber class]]) {
-        appID = [appID stringValue];
-    }
-    if ([appID isKindOfClass:[NSString class]] && [(NSString *)appID length] > 0) {
-        return appID;
+    NSDictionary *serverDic = adInitArgument.serverContentDic;
+    if (![serverDic isKindOfClass:[NSDictionary class]]) { return @""; }
+
+    NSArray<NSString *> *aliasKeys = @[@"appId", @"appid", @"app_id", @"appID", @"APPID"];
+    for (NSString *key in aliasKeys) {
+        id value = serverDic[key];
+        if ([value isKindOfClass:[NSNumber class]]) {
+            value = [(NSNumber *)value stringValue];
+        }
+        if (![value isKindOfClass:[NSString class]]) { continue; } // NSNull / 容器类型一律跳过
+        // 后台复制粘贴容易带首尾空格，trim 一下，否则同样会被当成已配置却请求失败。
+        NSString *appID = [(NSString *)value stringByTrimmingCharactersInSet:
+                           [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if (appID.length > 0) { return appID; }
     }
     return @"";
 }
+
 
 
 @end
